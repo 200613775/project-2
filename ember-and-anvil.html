@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ember &amp; Anvil — Small-Batch Coffee Roasters</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#241811;
+    --bg-alt:#2f1f16;
+    --paper:#F4EAD8;
+    --gold:#D6A431;
+    --teal:#3E7C71;
+    --line:rgba(244,234,216,0.14);
+    --muted:#C9B79E;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--paper);
+    font-family:'Work Sans', sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{font-family:'Fraunces', serif; font-weight:600; letter-spacing:-0.01em;}
+  a{color:inherit; text-decoration:none;}
+  .wrap{max-width:1100px; margin:0 auto; padding:0 28px;}
+
+  header{
+    position:sticky; top:0; z-index:50;
+    background:rgba(36,24,17,0.9);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  nav{display:flex; align-items:center; justify-content:space-between; padding:18px 0;}
+  .logo{font-family:'Fraunces', serif; font-size:20px; font-weight:700; letter-spacing:0.02em;}
+  .logo span{color:var(--gold);}
+  .navlinks{display:flex; gap:32px; font-size:14px; letter-spacing:0.03em; text-transform:uppercase;}
+  .navlinks a{opacity:0.8; transition:opacity 0.2s;}
+  .navlinks a:hover{opacity:1; color:var(--gold);}
+  .navtoggle{display:none; background:none; border:none; color:var(--paper); font-size:24px; cursor:pointer;}
+
+  .hero{
+    padding:110px 0 90px;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; top:-200px; right:-150px;
+    width:500px; height:500px; border-radius:50%;
+    background:radial-gradient(circle, rgba(214,164,49,0.18), transparent 70%);
+  }
+  .kicker{
+    font-size:13px; text-transform:uppercase; letter-spacing:0.16em; color:var(--gold);
+    margin-bottom:18px; display:flex; align-items:center; gap:10px;
+  }
+  .kicker::before{content:""; width:28px; height:1px; background:var(--gold);}
+  .hero h1{
+    font-size:clamp(40px, 6vw, 76px);
+    line-height:0.98;
+    max-width:820px;
+    margin-bottom:24px;
+  }
+  .hero h1 em{font-style:italic; color:var(--gold);}
+  .hero p{max-width:520px; font-size:18px; color:var(--muted); margin-bottom:36px;}
+  .btnrow{display:flex; gap:16px; flex-wrap:wrap;}
+  .btn{
+    display:inline-block; padding:14px 30px; border-radius:2px;
+    font-size:14px; letter-spacing:0.04em; text-transform:uppercase;
+    transition:transform 0.2s, background 0.2s;
+  }
+  .btn-primary{background:var(--gold); color:var(--bg); font-weight:600;}
+  .btn-primary:hover{transform:translateY(-2px);}
+  .btn-ghost{border:1px solid var(--line); color:var(--paper);}
+  .btn-ghost:hover{border-color:var(--gold); color:var(--gold);}
+
+  .stats{
+    display:grid; grid-template-columns:repeat(3,1fr);
+    border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+    background:var(--bg-alt);
+  }
+  .stat{padding:36px 28px; text-align:center; border-right:1px solid var(--line);}
+  .stat:last-child{border-right:none;}
+  .stat .num{font-family:'Fraunces', serif; font-size:38px; color:var(--gold);}
+  .stat .lbl{font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; margin-top:6px;}
+
+  .section{padding:90px 0;}
+  .section-head{max-width:600px; margin-bottom:56px;}
+  .section-head .kicker{margin-bottom:14px;}
+  .section-head h2{font-size:clamp(28px,4vw,44px);}
+
+  .beans{display:grid; grid-template-columns:repeat(3,1fr); gap:28px;}
+  .bean-card{
+    background:var(--bg-alt); border:1px solid var(--line); padding:32px 26px;
+    transition:border-color 0.25s, transform 0.25s;
+  }
+  .bean-card:hover{border-color:var(--gold); transform:translateY(-4px);}
+  .bean-origin{font-size:12px; text-transform:uppercase; letter-spacing:0.1em; color:var(--teal); margin-bottom:10px;}
+  .bean-card h3{font-size:24px; margin-bottom:10px;}
+  .bean-card p{color:var(--muted); font-size:15px; margin-bottom:18px;}
+  .bean-notes{display:flex; gap:8px; flex-wrap:wrap;}
+  .note-tag{
+    font-size:11px; text-transform:uppercase; letter-spacing:0.05em;
+    border:1px solid var(--line); padding:4px 10px; border-radius:20px; color:var(--muted);
+  }
+  .bean-price{margin-top:20px; font-family:'Fraunces', serif; font-size:20px; color:var(--gold);}
+
+  .process{
+    display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center;
+  }
+  .process-copy p{color:var(--muted); margin-bottom:20px; max-width:460px;}
+  .process-list{list-style:none;}
+  .process-list li{
+    display:flex; gap:18px; padding:18px 0; border-top:1px solid var(--line);
+  }
+  .process-list li:last-child{border-bottom:1px solid var(--line);}
+  .process-list .idx{font-family:'Fraunces', serif; color:var(--gold); font-size:15px; min-width:24px;}
+  .process-list h4{font-size:17px; margin-bottom:4px; font-family:'Work Sans', sans-serif; font-weight:600;}
+  .process-list span{color:var(--muted); font-size:14px;}
+  .process-visual{
+    aspect-ratio:4/5; background:linear-gradient(160deg, var(--bg-alt), #1a110b);
+    border:1px solid var(--line); position:relative; overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .roast-dial{width:70%; aspect-ratio:1; border-radius:50%; border:2px solid var(--gold); position:relative; display:flex; align-items:center; justify-content:center;}
+  .roast-dial::after{content:"°"; font-family:'Fraunces', serif; font-size:64px; color:var(--gold);}
+  .roast-dial::before{
+    content:""; position:absolute; inset:-2px; border-radius:50%;
+    border:2px solid transparent; border-top-color:var(--teal); transform:rotate(35deg);
+  }
+
+  .cta{
+    background:var(--gold); color:var(--bg); padding:70px 0; text-align:center;
+  }
+  .cta h2{font-size:clamp(26px,4vw,40px); margin-bottom:14px;}
+  .cta p{color:#5a4520; margin-bottom:30px;}
+  .cta .btn-primary{background:var(--bg); color:var(--paper);}
+
+  footer{padding:50px 0; border-top:1px solid var(--line);}
+  .foot-grid{display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:24px;}
+  .foot-grid .logo{margin-bottom:10px;}
+  .foot-cols{display:flex; gap:60px;}
+  .foot-col h5{font-size:12px; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); margin-bottom:12px;}
+  .foot-col a{display:block; font-size:14px; color:var(--paper); opacity:0.8; margin-bottom:8px;}
+  .foot-col a:hover{opacity:1; color:var(--gold);}
+  .foot-bottom{margin-top:40px; padding-top:24px; border-top:1px solid var(--line); font-size:13px; color:var(--muted); display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;}
+
+  @media (max-width:820px){
+    .stats{grid-template-columns:1fr; }
+    .stat{border-right:none; border-bottom:1px solid var(--line);}
+    .stat:last-child{border-bottom:none;}
+    .beans{grid-template-columns:1fr;}
+    .process{grid-template-columns:1fr;}
+    .process-visual{order:-1; aspect-ratio:16/9;}
+  }
+  @media (max-width:640px){
+    .navlinks{display:none;}
+    .navtoggle{display:block;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <nav>
+      <a href="#" class="logo">Ember <span>&amp;</span> Anvil</a>
+      <div class="navlinks">
+        <a href="#beans">Beans</a>
+        <a href="#process">Roast Process</a>
+        <a href="#visit">Visit</a>
+      </div>
+      <button class="navtoggle" aria-label="Menu">☰</button>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="kicker">Small-batch roastery, est. Barrie</div>
+    <h1>Roasted in <em>small drums</em>,<br>brewed with intent.</h1>
+    <p>We roast six days a week, twelve kilos at a time, so every bag you buy was roasted within the last two weeks — not the last two months.</p>
+    <div class="btnrow">
+      <a href="#beans" class="btn btn-primary">Shop this week's roast</a>
+      <a href="#visit" class="btn btn-ghost">Visit the roastery</a>
+    </div>
+  </div>
+</section>
+
+<div class="stats">
+  <div class="stat"><div class="num">12kg</div><div class="lbl">Per roast batch</div></div>
+  <div class="stat"><div class="num">14 days</div><div class="lbl">Roast to doorstep</div></div>
+  <div class="stat"><div class="num">6</div><div class="lbl">Origins in rotation</div></div>
+</div>
+
+<section class="section" id="beans">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">This week's lineup</div>
+      <h2>Three roasts, three moods</h2>
+    </div>
+    <div class="beans">
+      <div class="bean-card">
+        <div class="bean-origin">Yirgacheffe, Ethiopia</div>
+        <h3>Morning Fog</h3>
+        <p>Washed process, light roast. Bright and floral with a jasmine finish — built for pour-over.</p>
+        <div class="bean-notes">
+          <span class="note-tag">Jasmine</span>
+          <span class="note-tag">Bergamot</span>
+          <span class="note-tag">Light</span>
+        </div>
+        <div class="bean-price">$21 / 340g</div>
+      </div>
+      <div class="bean-card">
+        <div class="bean-origin">Huila, Colombia</div>
+        <h3>Anvil Standard</h3>
+        <p>Our house blend. Medium roast built for milk drinks — balanced sweetness, low acidity, dependable.</p>
+        <div class="bean-notes">
+          <span class="note-tag">Brown Sugar</span>
+          <span class="note-tag">Almond</span>
+          <span class="note-tag">Medium</span>
+        </div>
+        <div class="bean-price">$19 / 340g</div>
+      </div>
+      <div class="bean-card">
+        <div class="bean-origin">Mandheling, Sumatra</div>
+        <h3>Forge Dark</h3>
+        <p>Full city roast, syrupy body. Earthy and low-toned — the one regulars ask for by name.</p>
+        <div class="bean-notes">
+          <span class="note-tag">Cedar</span>
+          <span class="note-tag">Dark Cocoa</span>
+          <span class="note-tag">Dark</span>
+        </div>
+        <div class="bean-price">$20 / 340g</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="process" style="background:var(--bg-alt); border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">How we roast</div>
+      <h2>Four steps, no shortcuts</h2>
+    </div>
+    <div class="process">
+      <div class="process-copy">
+        <ul class="process-list">
+          <li><span class="idx">01</span><div><h4>Source direct</h4><span>We buy from three importers who visit the farms themselves, every season.</span></div></li>
+          <li><span class="idx">02</span><div><h4>Cup before we buy</h4><span>Every lot is cupped blind against the last three years of that farm's harvest.</span></div></li>
+          <li><span class="idx">03</span><div><h4>Roast in small drums</h4><span>12kg batches on a 1955 drum roaster, tracked and logged by hand.</span></div></li>
+          <li><span class="idx">04</span><div><h4>Rest, then ship</h4><span>Beans rest 5–10 days post-roast before bags go out the door.</span></div></li>
+        </ul>
+      </div>
+      <div class="process-visual">
+        <div class="roast-dial"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta" id="visit">
+  <div class="wrap">
+    <h2>Come stand by the roaster.</h2>
+    <p>Open Tuesday–Sunday, 8am–4pm. Watch a roast, taste the difference.</p>
+    <a href="#" class="btn btn-primary">Get directions</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="logo">Ember <span style="color:var(--gold);">&amp;</span> Anvil</div>
+        <p style="color:var(--muted); font-size:14px; max-width:260px;">Small-batch coffee roasted in the heart of Barrie, Ontario.</p>
+      </div>
+      <div class="foot-cols">
+        <div class="foot-col">
+          <h5>Shop</h5>
+          <a href="#beans">Current Roasts</a>
+          <a href="#">Subscriptions</a>
+          <a href="#">Gift Sets</a>
+        </div>
+        <div class="foot-col">
+          <h5>Roastery</h5>
+          <a href="#process">Our Process</a>
+          <a href="#visit">Visit Us</a>
+          <a href="#">Wholesale</a>
+        </div>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Ember &amp; Anvil Coffee Roasters</span>
+      <span>Designed &amp; built by Nishi Patel — personal project</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
